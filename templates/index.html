@@ -1,107 +1,163 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Reserva Papai Noel</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recanto do Papai Noel - Curitiba | Reserva 2026</title>
+    <style>
+        :root {
+            --bg-dark: #140808;
+            --card-bg: #220d0d;
+            --gold: #e5c158;
+            --gold-light: #f7df8b;
+            --text-light: #f8f5f0;
+            --border-gold: rgba(229, 193, 88, 0.35);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-light); line-height: 1.5; padding: 16px; }
+        .container { max-width: 680px; margin: 0 auto; background: var(--card-bg); border: 1px solid var(--border-gold); border-radius: 16px; overflow: hidden; box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7); }
+        .capa-wrapper { width: 100%; background: #000; text-align: center; }
+        .capa-wrapper img { width: 100%; height: auto; display: block; }
+        .content { padding: 24px; }
+        h1 { color: var(--gold); text-align: center; font-size: 1.55rem; margin-bottom: 6px; }
+        .subtitle { text-align: center; font-size: 0.95rem; color: #ddd; margin-bottom: 22px; }
+        .alert-error { background: #5c1212; border: 1px solid #ff6b6b; color: #fff; padding: 14px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
+        .form-group { margin-bottom: 16px; }
+        label { display: block; color: var(--gold-light); font-weight: 600; margin-bottom: 6px; font-size: 0.95rem; }
+        input, select, textarea { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-gold); background: #120606; color: #fff; font-size: 1rem; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--gold); }
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        @media (max-width: 520px) { .row { grid-template-columns: 1fr; } }
+        .btn-submit { width: 100%; padding: 15px; background: linear-gradient(135deg, var(--gold), #c89b2b); color: #1a0808; font-weight: 800; font-size: 1.1rem; border: none; border-radius: 10px; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
+        .pix-box { background: #180808; border: 2px solid var(--gold); border-radius: 12px; padding: 20px; text-align: center; }
+        .pix-box h2 { color: var(--gold); margin-bottom: 10px; }
+        .resumo-reserva { background: #2b1111; padding: 12px; border-radius: 8px; margin: 14px 0; font-size: 0.95rem; text-align: left; }
+        .qr-img { background: #fff; padding: 8px; border-radius: 10px; margin: 12px auto; width: 220px; height: 220px; object-fit: contain; display: block; }
+        .btn-copy { background: #333; color: var(--gold-light); border: 1px solid var(--gold); padding: 11px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; margin-bottom: 14px; width: 100%; }
+        .btn-whats { display: block; background: #25D366; color: #fff; text-decoration: none; font-weight: 800; padding: 14px; border-radius: 10px; font-size: 1.05rem; margin-top: 10px; }
+        .footer { text-align: center; font-size: 0.8rem; color: #aaa; padding: 16px; border-top: 1px solid rgba(255,255,255,0.08); }
+    </style>
 </head>
 <body>
-
-<!-- FUNDO -->
-<div class="background-frame"></div>
-
-<!-- FORMULÁRIO -->
-<div class="form-wrapper">
-    <div class="scroll-area">
-
-        {% if mensagem %}
-        <div class="msg">{{ mensagem }}</div>
+<div class="container">
+    <div class="capa-wrapper">
+        <img src="{{ url_for('static', filename='capa_2026.jpg') }}" alt="Recanto do Papai Noel Curitiba">
+    </div>
+    <div class="content">
+        {% if erro %}
+            <div class="alert-error">{{ erro }}</div>
         {% endif %}
 
-        <form action="/agendar" method="POST">
-
-            <label class="label">Data</label>
-            <select name="data" id="data" class="input" required>
-                <option value="">Selecione...</option>
-                <option value="2025-12-24">24 de Dezembro</option>
-                <option value="2025-12-25">25 de Dezembro</option>
-            </select>
-
-            <label class="label">Horário</label>
-            <select name="horario" id="horario" class="input" required>
-                <option value="">Selecione uma data...</option>
-            </select>
-
-            <label class="label">Nome da criança / responsável</label>
-            <input type="text" name="nome" class="input" required />
-
-            <label class="label">Idade</label>
-            <input type="text" name="idade" class="input" required />
-
-            <label class="label">Nº de crianças</label>
-            <input type="number" id="numCriancas" name="num_criancas" class="input" min="1" required />
-
-            <label class="label">E-mail</label>
-            <input type="email" name="email" class="input" required />
-
-            <label class="label">Telefone</label>
-            <input type="text" name="telefone" class="input" />
-
-            <label class="label">Presente</label>
-            <input type="text" name="presente" class="input" />
-
-            <label class="label">Valor Total</label>
-            <input type="text" id="valorTotal" name="valor" class="input" readonly required />
-
-            <label class="label">Endereço</label>
-            <input type="text" name="endereco" class="input" required />
-
-            <button type="submit">Confirmar Reserva</button>
-        </form>
+        {% if reserva %}
+            <div class="pix-box">
+                <h2>🎄 Pré-Reserva Realizada!</h2>
+                <p>Sua vaga está pré-reservada. Para confirmar definitivamente, faça o PIX de <strong>R$ 50,00</strong> e envie o comprovante no WhatsApp.</p>
+                <div class="resumo-reserva">
+                    <p><strong>Responsável:</strong> {{ reserva.responsavel }}</p>
+                    <p><strong>Data:</strong> {{ reserva.data_br }} às <strong>{{ reserva.horario }}</strong></p>
+                    <p><strong>Família:</strong> {{ reserva.criancas }} criança(s) e {{ reserva.adultos }}</p>
+                    <p><strong>Valor:</strong> R$ 50,00</p>
+                </div>
+                <img class="qr-img" src="{{ url_for('static', filename='KrCode pix Paulo.jpg') }}" alt="QR Code PIX R$ 50,00">
+                <p style="font-size: 0.85rem; color: #ccc; margin-bottom: 8px;">Recebedor: <strong>PAULO DUARTE</strong> | Chave: <strong>(41) 99756-5882</strong></p>
+                <button type="button" class="btn-copy" onclick="copiarPix()">📋 Copiar Código PIX (Copia e Cola)</button>
+                <a class="btn-whats" target="_blank" href="https://wa.me/{{ whatsapp_noel }}?text={{ ('Olá Papai Noel! Acabei de reservar o horário de ' + reserva.data_br + ' às ' + reserva.horario + ' em nome de ' + reserva.responsavel + '. Segue o comprovante do PIX de R$ 50,00:') | urlencode }}">📲 Enviar Comprovante no WhatsApp</a>
+                <p style="margin-top: 16px;"><a href="/" style="color: var(--gold); font-size: 0.9rem;">← Fazer outro agendamento</a></p>
+            </div>
+        {% else %}
+            <h1>Reserve sua Sessão Exclusiva</h1>
+            <p class="subtitle">14 minutos exclusivos com o Papai Noel • Bairro Uberaba, Curitiba</p>
+            <form action="/enviar" method="POST">
+                <div class="row">
+                    <div class="form-group">
+                        <label for="data">1. Escolha a Data *</label>
+                        <select id="data" name="data" required onchange="carregarHorarios()">
+                            <option value="">Selecione o dia...</option>
+                            {% for d in datas %}<option value="{{ d.valor }}">{{ d.texto }}</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="horario">2. Escolha o Horário *</label>
+                        <select id="horario" name="horario" required><option value="">Selecione a data primeiro...</option></select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="responsavel">3. Nome Completo do Responsável *</label>
+                    <input type="text" id="responsavel" name="responsavel" placeholder="Ex: João da Silva" required>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="telefone">4. WhatsApp com DDD *</label>
+                        <input type="tel" id="telefone" name="telefone" placeholder="Ex: (41) 99999-9999" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">5. E-mail (Opcional)</label>
+                        <input type="email" id="email" name="email" placeholder="seuemail@exemplo.com">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="numero_criancas">6. Quantas crianças? (Até 4) *</label>
+                        <select id="numero_criancas" name="numero_criancas" required>
+                            <option value="1">1 criança</option><option value="2">2 crianças</option><option value="3">3 crianças</option><option value="4">4 crianças</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="numero_adultos">7. Quantos adultos? (Até 4) *</label>
+                        <select id="numero_adultos" name="numero_adultos" required>
+                            <option value="1 adulto">1 adulto</option><option value="2 adultos">2 adultos</option><option value="3 adultos">3 adultos</option><option value="4 adultos">4 adultos</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="bairro">8. Seu Bairro</label>
+                        <input type="text" id="bairro" name="bairro" placeholder="Ex: Uberaba, Boqueirão...">
+                    </div>
+                    <div class="form-group">
+                        <label for="autoriza_imagem">9. Autoriza foto nas redes sociais? *</label>
+                        <select id="autoriza_imagem" name="autoriza_imagem" required>
+                            <option value="Sim, autorizo">Sim, autorizo</option><option value="Não autorizo">Não autorizo</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="observacoes">10. Observações (Opcional)</label>
+                    <textarea id="observacoes" name="observacoes" rows="2" placeholder="Ex: Vai levar presente para o Noel entregar?"></textarea>
+                </div>
+                <button type="submit" class="btn-submit">Reservar Horário • R$ 50,00</button>
+            </form>
+        {% endif %}
     </div>
+    <div class="footer">Recanto do Papai Noel • Bairro Uberaba • Curitiba - PR<br>Apoio de Mídia: BackstageTV.com.br/projetos</div>
 </div>
-
-<!-- SCRIPT PARA CARREGAR HORÁRIOS -->
 <script>
-document.getElementById("data").addEventListener("change", function () {
-    const data = this.value;
-    const select = document.getElementById("horario");
-    select.innerHTML = "<option>Carregando horários...</option>";
-
-    fetch("/horarios_indisponiveis", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: "data=" + encodeURIComponent(data)
-    })
-    .then(r => r.json())
-    .then(json => {
-        const ocupados = json.ocupados || [];
-        const horarios = json.horarios_disponiveis || [];
-        select.innerHTML = "";
-
-        horarios.forEach(h => {
-            const opt = document.createElement("option");
-            opt.value = h;
-            opt.textContent = ocupados.includes(h) ? `${h} (indisponível)` : h;
-            if (ocupados.includes(h)) opt.disabled = true;
-            select.appendChild(opt);
-        });
-    })
-    .catch(() => select.innerHTML = "<option>Erro ao carregar horários</option>");
-});
+    const codigoPix = "{{ pix_copia_cola }}";
+    async function carregarHorarios() {
+        const dataSelecionada = document.getElementById("data").value;
+        const selectHorario = document.getElementById("horario");
+        if (!dataSelecionada) { selectHorario.innerHTML = '<option value="">Selecione a data primeiro...</option>'; return; }
+        selectHorario.innerHTML = '<option value="">Carregando horários...</option>';
+        const formData = new FormData();
+        formData.append("data", dataSelecionada);
+        try {
+            const resposta = await fetch("/horarios_indisponiveis", { method: "POST", body: formData });
+            const dados = await resposta.json();
+            const todos = dados.horarios_disponiveis || [];
+            const ocupados = dados.ocupados || [];
+            selectHorario.innerHTML = "";
+            todos.forEach(hora => {
+                const option = document.createElement("option");
+                option.value = hora;
+                if (ocupados.includes(hora)) { option.textContent = hora + " - (ESGOTADO)"; option.disabled = true; }
+                else { option.textContent = hora + " - Disponível"; }
+                selectHorario.appendChild(option);
+            });
+        } catch (e) { selectHorario.innerHTML = '<option value="">Erro ao carregar horários</option>'; }
+    }
+    function copiarPix() {
+        navigator.clipboard.writeText(codigoPix).then(() => { alert("Código PIX copiado! Agora abra o app do seu banco e escolha 'PIX Copia e Cola'."); });
+    }
 </script>
-
-<!-- SCRIPT PARA CALCULAR VALOR AUTOMATICAMENTE -->
-<script>
-document.getElementById("numCriancas").addEventListener("input", function () {
-    const quantidade = parseInt(this.value, 10) || 0;
-    const total = quantidade * 50; // VALOR POR CRIANÇA
-    document.getElementById("valorTotal").value =
-        "R$ " + total.toFixed(2).replace(".", ",");
-});
-</script>
-
 </body>
 </html>
-
