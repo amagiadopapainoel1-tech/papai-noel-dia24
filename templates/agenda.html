@@ -2,71 +2,65 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Agenda do Papai Noel 🎅</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda Papai Noel 2026</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f6f5f7;
-            margin: 0;
-            padding: 20px;
-        }
-        h1 {
-            text-align: center;
-            color: #B30000;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        th {
-            background: #B30000;
-            color: white;
-            padding: 10px;
-            text-transform: uppercase;
-        }
-        td {
-            padding: 8px;
-            border-bottom: 1px solid #ddd;
-        }
-        tr:hover {
-            background: #f1e1e1;
-        }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #140808; color: #f8f5f0; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        h1 { color: #e5c158; margin-bottom: 6px; }
+        .resumo { margin-bottom: 16px; color: #ddd; }
+        table { width: 100%; border-collapse: collapse; background: #220d0d; border-radius: 10px; overflow: hidden; }
+        th, td { border: 1px solid #4a2525; padding: 11px; text-align: left; font-size: 0.9rem; }
+        th { background: #3b1414; color: #e5c158; }
+        tr:nth-child(even) { background: #1b0a0a; }
+        .btn-del { background: #b71c1c; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-voltar { display: inline-block; margin-bottom: 14px; color: #e5c158; text-decoration: none; font-weight: bold; }
     </style>
 </head>
-
 <body>
-    <h1>Agenda do Papai Noel 🎅</h1>
+<div class="container">
+    <a href="/" class="btn-voltar">← Voltar para a página de agendamento</a>
+    <h1>🎅 Agenda - Recanto do Papai Noel 2026</h1>
+    <p class="resumo">Total de reservas registradas: <strong>{{ agendamentos | length }}</strong></p>
 
     <table>
-        <tr>
-            <th>Data</th>
-            <th>Hora</th>
-            <th>Criança</th>
-            <th>Responsável</th>
-            <th>Telefone</th>
-            <th>Endereço</th>
-            <th>Bairro</th>
-            <th>Presente</th>
-            <th>Status</th>
-            <th>Observações</th>
-        </tr>
-
-        {% for linha in dados %}
-        <tr>
-            <td>{{ linha[0] }}</td>
-            <td>{{ linha[1] }}</td>
-            <td>{{ linha[2] }}</td>
-            <td>{{ linha[3] }}</td>
-            <td>{{ linha[4] }}</td>
-            <td>{{ linha[5] }}</td>
-            <td>{{ linha[6] }}</td>
-            <td>{{ linha[7] }}</td>
-            <td>{{ linha[8] }}</td>
-            <td>{{ linha[9] }}</td>
-        </tr>
-        {% endfor %}
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Horário</th>
+                <th>Responsável</th>
+                <th>Crianças</th>
+                <th>WhatsApp</th>
+                <th>Bairro</th>
+                <th>Status</th>
+                <th>Detalhes</th>
+                <th>Ação</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in agendamentos %}
+            <tr>
+                <td>{{ item.data }}</td>
+                <td><strong>{{ item.horario }}</strong></td>
+                <td>{{ item.responsavel }}</td>
+                <td>{{ item.criancas }}</td>
+                <td>{{ item.telefone }}</td>
+                <td>{{ item.bairro }}</td>
+                <td>{{ item.status }}</td>
+                <td>{{ item.obs }}</td>
+                <td>
+                    <form action="/excluir/{{ item.id }}" method="POST" onsubmit="return confirm('Deseja realmente excluir esta reserva?');">
+                        <button type="submit" class="btn-del">Excluir</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="9" style="text-align: center; padding: 20px; color: #aaa;">Nenhuma reserva registrada ainda.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
     </table>
+</div>
 </body>
 </html>
