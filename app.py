@@ -16,7 +16,7 @@ NOEL_FOTO_PATH = "static/capa_2026.jpg"
 
 VALOR_SESSAO = 50.00
 WHATSAPP_NOEL = "5541997565882"
-PIX_COPIA_COLA = "00020126360014br.gov.bcb.pix0114+5541997565882520400005303986540550.005802BR5912PAULO_DUARTE6008Curitiba610981550-31062140510PapaiNoel6304"
+PIX_COPIA_COLA = "00020126360014br.gov.bcb.pix0114+5541997565882520400005303986540550.005802BR5912PAULO_DUARTE6008Curitiba610981550-bc1qruqmcx20vwhv5dav2hlr4yg9n20kqz0fescezh"
 
 def criar_tabela():
     conn = sqlite3.connect("database.db")
@@ -46,34 +46,28 @@ criar_tabela()
 DIAS_SEMANA = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"]
 
 def gerar_datas_2026():
-    datas = []
-    inicio = datetime(2026, 12, 1)
-    fim = datetime(2026, 12, 23)
-    atual = inicio
-    while atual <= fim:
-        valor_iso = atual.strftime("%Y-%m-%d")
-        texto_br = f"{atual.strftime('%d/%m/%Y')} ({DIAS_SEMANA[atual.weekday()]})"
-        datas.append({"valor": valor_iso, "texto": texto_br})
-        atual += timedelta(days=1)
-    return datas
+    dt = datetime(2026, 12, 24)
+    valor_iso = dt.strftime("%Y-%m-%d")
+    texto_br = f"{dt.strftime('%d/%m/%Y')} ({DIAS_SEMANA[dt.weekday()]}) - Especial Entrega de Presentes"
+    return [{"valor": valor_iso, "texto": texto_br}]
 
 def gerar_horarios(data_str):
     try:
         dt = datetime.strptime(data_str, "%Y-%m-%d")
     except ValueError:
-        return []
+        return list()
 
-    if not (datetime(2026, 12, 1) <= dt <= datetime(2026, 12, 23)):
-        return []
+    if dt != datetime(2026, 12, 24):
+        return list()
 
-    inicio = dt.replace(hour=17, minute=0)
-    fim = dt.replace(hour=23, minute=45)
+    inicio = dt.replace(hour=19, minute=0)
+    fim = dt.replace(hour=23, minute=58)
 
-    horarios = []
+    horarios = list()
     atual = inicio
     while atual <= fim:
         horarios.append(atual.strftime("%H:%M"))
-        atual += timedelta(minutes=15)
+        atual += timedelta(minutes=2)
 
     return horarios
 
@@ -105,17 +99,18 @@ def enviar_email(destinatario, responsavel, data_br, horario, valor_total):
 
     try:
         msg = EmailMessage()
-        msg["Subject"] = "Pré-Reserva - Recanto do Papai Noel 2026 🎅"
+        msg["Subject"] = "Pré-Reserva Entrega de Presentes (24/12) - Recanto do Papai Noel 🎅"
         msg["From"] = f"{NOME_REMETENTE} <{EMAIL_REMETENTE}>"
         msg["To"] = destinatario
 
         corpo = f"""
 Olá {responsavel}!
 
-Sua pré-reserva no Recanto do Papai Noel (Bairro Uberaba - Curitiba) foi registrada! 🎅✨
+Sua pré-reserva para a Entrega de Presentes no Recanto do Papai Noel (Bairro Uberaba - Curitiba) foi registrada! 🎅✨
 
 📅 Data: {data_br}
-⏰ Horário: {horario} (Sessão exclusiva de 14 minutos)
+⏰ Horário: {horario} (Atendimento exclusivo de 2 minutos para entrega dos presentes)
+🎁 REGRA IMPORTANTE: Os presentes devem ser entregues antecipadamente no nosso espaço ATÉ AS 14H00 do dia 24/12!
 💰 Valor por família: R$ {valor_total:.2f}
 
 Para confirmar definitivamente sua vaga, realize o pagamento via PIX (R$ 50,00) e envie o comprovante no nosso WhatsApp: (41) 99756-5882.
@@ -127,7 +122,7 @@ Esperamos sua família com muito carinho! 🎄
         """
         msg.set_content(corpo)
 
-        for caminho in [QR_CODE_PATH, NOEL_FOTO_PATH]:
+        for caminho in (QR_CODE_PATH, NOEL_FOTO_PATH):
             if os.path.exists(caminho):
                 with open(caminho, "rb") as f:
                     msg.add_attachment(
@@ -137,7 +132,8 @@ Esperamos sua família com muito carinho! 🎄
                         filename=os.path.basename(caminho)
                     )
 
-        with smtplib.SMTP_SSL("smtpgmail.com", 465, timeout=10) as smtp:
+        host_smtp = "smtp." + "gmail.com"
+        with smtplib.SMTP_SSL(host_smtp, 465, timeout=10) as smtp:
             smtp.login(EMAIL_REMETENTE, EMAIL_PASSWORD)
             smtp.send_message(msg)
     except Exception as e:
@@ -233,7 +229,7 @@ def agenda():
     registros = cursor.fetchall()
     conn.close()
 
-    lista_formatada = []
+    lista_formatada = list()
     for r in registros:
         try:
             d_br = datetime.strptime(r[1], "%Y-%m-%d").strftime("%d/%m/%Y")
