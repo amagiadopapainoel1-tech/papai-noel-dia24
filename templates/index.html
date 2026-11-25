@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recanto do Papai Noel - Curitiba | Reserva 2026</title>
+    <title>Recanto do Papai Noel - Especial Entrega de Presentes 24/12</title>
     <style>
         :root {
             --bg-dark: #140808;
@@ -20,7 +20,9 @@
         .capa-wrapper img { width: 100%; height: auto; display: block; }
         .content { padding: 24px; }
         h1 { color: var(--gold); text-align: center; font-size: 1.55rem; margin-bottom: 6px; }
-        .subtitle { text-align: center; font-size: 0.95rem; color: #ddd; margin-bottom: 22px; }
+        .subtitle { text-align: center; font-size: 0.95rem; color: #ddd; margin-bottom: 16px; }
+        .regra-box { background: #331313; border: 1px solid var(--gold); border-left: 5px solid var(--gold); padding: 14px; border-radius: 8px; margin-bottom: 20px; font-size: 0.92rem; color: #fff; }
+        .regra-box strong { color: var(--gold-light); }
         .alert-error { background: #5c1212; border: 1px solid #ff6b6b; color: #fff; padding: 14px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
         .form-group { margin-bottom: 16px; }
         label { display: block; color: var(--gold-light); font-weight: 600; margin-bottom: 6px; font-size: 0.95rem; }
@@ -50,35 +52,39 @@
 
         {% if reserva %}
             <div class="pix-box">
-                <h2>🎄 Pré-Reserva Realizada!</h2>
-                <p>Sua vaga está pré-reservada. Para confirmar definitivamente, faça o PIX de <strong>R$ 50,00</strong> e envie o comprovante no WhatsApp.</p>
+                <h2>🎁 Pré-Reserva Realizada!</h2>
+                <p>Sua vaga para o dia <strong>24/12</strong> está pré-reservada. Para confirmar definitivamente, faça o PIX de <strong>R$ 50,00</strong> e envie o comprovante no WhatsApp.</p>
                 <div class="resumo-reserva">
                     <p><strong>Responsável:</strong> {{ reserva.responsavel }}</p>
-                    <p><strong>Data:</strong> {{ reserva.data_br }} às <strong>{{ reserva.horario }}</strong></p>
+                    <p><strong>Data:</strong> {{ reserva.data_br }} às <strong>{{ reserva.horario }}</strong> (Entrega de 2 min)</p>
                     <p><strong>Família:</strong> {{ reserva.criancas }} criança(s) e {{ reserva.adultos }}</p>
                     <p><strong>Valor:</strong> R$ 50,00</p>
+                    <p style="margin-top: 8px; color: var(--gold-light);"><strong>⚠️ Lembrete:</strong> Entregar os presentes no espaço <strong>até as 14h00 do dia 24/12</strong>.</p>
                 </div>
                 <img class="qr-img" src="{{ url_for('static', filename='KrCode pix Paulo.jpg') }}" alt="QR Code PIX R$ 50,00">
                 <p style="font-size: 0.85rem; color: #ccc; margin-bottom: 8px;">Recebedor: <strong>PAULO DUARTE</strong> | Chave: <strong>(41) 99756-5882</strong></p>
                 <button type="button" class="btn-copy" onclick="copiarPix()">📋 Copiar Código PIX (Copia e Cola)</button>
-                <a class="btn-whats" target="_blank" href="https://wa.me/{{ whatsapp_noel }}?text={{ ('Olá Papai Noel! Acabei de reservar o horário de ' + reserva.data_br + ' às ' + reserva.horario + ' em nome de ' + reserva.responsavel + '. Segue o comprovante do PIX de R$ 50,00:') | urlencode }}">📲 Enviar Comprovante no WhatsApp</a>
+                <a class="btn-whats" target="_blank" href="https://wa.me{{ whatsapp_noel }}?text={{ ('Olá Papai Noel! Acabei de reservar a Entrega de Presentes no dia ' + reserva.data_br + ' às ' + reserva.horario + ' em nome de ' + reserva.responsavel + '. Segue o comprovante do PIX de R$ 50,00:') | urlencode }}">📲 Enviar Comprovante no WhatsApp</a>
                 <p style="margin-top: 16px;"><a href="/" style="color: var(--gold); font-size: 0.9rem;">← Fazer outro agendamento</a></p>
             </div>
         {% else %}
-            <h1>Reserve sua Sessão Exclusiva</h1>
-            <p class="subtitle">14 minutos exclusivos com o Papai Noel • Bairro Uberaba, Curitiba</p>
+            <h1>Entrega de Presentes • 24/12</h1>
+            <p class="subtitle">Atendimento exclusivo de 2 minutos (19h às 24h) • Bairro Uberaba, Curitiba</p>
+            <div class="regra-box">
+                🎅 <strong>ATENÇÃO À REGRA DO DIA 24/12:</strong><br>
+                Os presentes das crianças devem ser entregues antecipadamente no Recanto do Papai Noel <strong>até as 14h00 do dia 24/12</strong> para organização do Bom Velhinho.
+            </div>
             <form action="/enviar" method="POST">
                 <div class="row">
                     <div class="form-group">
-                        <label for="data">1. Escolha a Data *</label>
+                        <label for="data">1. Data do Evento *</label>
                         <select id="data" name="data" required onchange="carregarHorarios()">
-                            <option value="">Selecione o dia...</option>
-                            {% for d in datas %}<option value="{{ d.valor }}">{{ d.texto }}</option>{% endfor %}
+                            {% for d in datas %}<option value="{{ d.valor }}" selected>{{ d.texto }}</option>{% endfor %}
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="horario">2. Escolha o Horário *</label>
-                        <select id="horario" name="horario" required><option value="">Selecione a data primeiro...</option></select>
+                        <label for="horario">2. Escolha o Horário (2 min) *</label>
+                        <select id="horario" name="horario" required><option value="">Carregando horários...</option></select>
                     </div>
                 </div>
                 <div class="form-group">
@@ -111,8 +117,8 @@
                 </div>
                 <div class="row">
                     <div class="form-group">
-                        <label for="bairro">8. Seu Bairro</label>
-                        <input type="text" id="bairro" name="bairro" placeholder="Ex: Uberaba, Boqueirão...">
+                        <label for="bairro">8. Seu Bairro *</label>
+                        <input type="text" id="bairro" name="bairro" placeholder="Ex: Uberaba, Boqueirão..." required>
                     </div>
                     <div class="form-group">
                         <label for="autoriza_imagem">9. Autoriza foto nas redes sociais? *</label>
@@ -122,10 +128,10 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="observacoes">10. Observações (Opcional)</label>
-                    <textarea id="observacoes" name="observacoes" rows="2" placeholder="Ex: Vai levar presente para o Noel entregar?"></textarea>
+                    <label for="observacoes">10. Nome das Crianças / Observações *</label>
+                    <textarea id="observacoes" name="observacoes" rows="2" placeholder="Informe o nome das crianças para identificação dos presentes" required></textarea>
                 </div>
-                <button type="submit" class="btn-submit">Reservar Horário • R$ 50,00</button>
+                                <button type="submit" class="btn-submit">Reservar Horário • R$ 50,00</button>
             </form>
         {% endif %}
     </div>
@@ -143,8 +149,8 @@
         try {
             const resposta = await fetch("/horarios_indisponiveis", { method: "POST", body: formData });
             const dados = await resposta.json();
-            const todos = dados.horarios_disponiveis || [];
-            const ocupados = dados.ocupados || [];
+            const todos = dados.horarios_disponiveis || new Array();
+            const ocupados = dados.ocupados || new Array();
             selectHorario.innerHTML = "";
             todos.forEach(hora => {
                 const option = document.createElement("option");
@@ -158,6 +164,8 @@
     function copiarPix() {
         navigator.clipboard.writeText(codigoPix).then(() => { alert("Código PIX copiado! Agora abra o app do seu banco e escolha 'PIX Copia e Cola'."); });
     }
+    window.addEventListener("DOMContentLoaded", carregarHorarios);
 </script>
 </body>
 </html>
+
